@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>To-Do List</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 80%; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background: #f4f4f4; }
+    .msg { color: green; margin: 10px 0; }
+    .error { color: red; margin: 10px 0; }
+    .actions { display: inline-flex; gap: 8px; margin-bottom: 12px; }
+    .btn { padding: 6px 10px; border-radius: 4px; background: #6c757d; color: white; text-decoration: none; border: none; cursor: pointer; }
+    .btn.save { background: #0275d8; }
+    .btn.clear { background: #d9534f; }
+    .btn.delete { background: #d9534f; }
+    form.inline { display: inline; margin: 0; }
+  </style>
+</head>
+<body>
+  <h1>To-Do List</h1>
+
+  {% if msg %}
+    <div class="msg">{{ msg }}</div>
+  {% endif %}
+  {% if error %}
+    <div class="error">{{ error }}</div>
+  {% endif %}
+
+  <div class="actions">
+    <form method="post" action="{{ url_for('save_route') }}" class="inline">
+      <button class="btn save" type="submit">Save</button>
+    </form>
+
+    {% if todos %}
+    <form method="post" action="{{ url_for('clear') }}" class="inline">
+      <button class="btn clear" type="submit">Clear</button>
+    </form>
+    {% endif %}
+  </div>
+
+  {% if todos %}
+  <table>
+    <thead>
+      <tr><th>Task</th><th>Email</th><th>Priority</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+      {% for item in todos %}
+      <tr>
+        <td>{{ item.task }}</td>
+        <td>{{ item.email }}</td>
+        <td>{{ item.priority }}</td>
+        <td>
+          <form method="post" action="{{ url_for('delete', item_id=item.id) }}" class="inline">
+            <button class="btn delete" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>The list is empty.</p>
+  {% endif %}
+
+  <h2>Add To-Do Item</h2>
+  <form method="post" action="{{ url_for('submit') }}">
+    <label>Task<br><input name="task" required></label><br><br>
+    <label>Email<br><input name="email" required></label><br><br>
+    <label>Priority<br>
+      <select name="priority" required>
+        <option>Low</option>
+        <option selected>Medium</option>
+        <option>High</option>
+      </select>
+    </label><br><br>
+    <input type="submit" value="Add To-Do Item">
+  </form>
+</body>
+</html>
